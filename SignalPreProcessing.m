@@ -18,9 +18,7 @@ Z = zeros(length(file_list),6000);
 for i = 1:10
     file_name = fullfile(folder_path, file_list(i).name);  
     z = load(file_name).val(1,:);  
-    N = 2^nextpow2(length(z));
-    f = linspace(0,1,N/2+1)*Fs/2;
-    Z1 = fft(z,N)/length(z)*2;
+    
     y = filter(b_lp1, a_lp, filter(b_hp, a_hp, z));
     figure, plot(z)
     title('Primer željenog signala z(n) pre BP filtriranja'); xlabel('t[ms]'); ylabel('Amplituda');
@@ -39,11 +37,12 @@ for i = 1:10
     y1 = y + x1 + x2 + x3 + x4;
     D(i,:) = y1;
     Z(i,:) = y;
+    
+    N = 2^nextpow2(length(z));
+    f = linspace(0,1,N/2+1)*Fs/2;
     Y = fft(y,N)/length(y)*2;
     Y1 = fft(y1,N)/length(y1)*2;
     
-
-   
    figure, plot(f,20*log10(abs((Y(1:N/2+1))).^2));
    title('Spektar snage željenog signala z(n) nakon BP filtriranja'); xlabel('f[Hz]'); ylabel('Snaga[dB]')
    filename = ['Spektar snage željenog signala z(n)_', num2str(i), '.jpg'];saveas(gcf, filename, 'jpg');
